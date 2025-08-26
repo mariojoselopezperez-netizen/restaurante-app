@@ -149,9 +149,16 @@ const App = () => {
             const q = query(productsCollectionRef);
 
             const unsubscribeProducts = onSnapshot(q, (snapshot) => {
+                // ✨ Verificación clave: Asegurarse de que el 'snapshot' sea un objeto válido.
+    if (snapshot) {
                 const productsData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 setProducts(productsData);
-            }, (error) => {
+                } else {
+            // En caso de que el snapshot sea nulo, simplemente limpiamos la lista       
+            console.warn("Snapshot de productos es nulo. No se pudo cargar la lista."); 
+            setProducts([]);
+             }
+           }, (error) => {
                 console.error("Error al obtener productos:", error);
             });
 
@@ -165,17 +172,23 @@ const App = () => {
             const tablesCollectionRef = collection(dbInstance, `artifacts/${appId}/users/${user.uid}/tables`);
             const q = query(tablesCollectionRef);
 
-            const unsubscribeTables = onSnapshot(q, (snapshot) => {
-                const tablesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                // Modificado para ordenar por el número de la mesa
-                setTables(tablesData.sort((a, b) => {
-                    const numA = parseInt(a.name.replace('Mesa ', ''), 10);
-                    const numB = parseInt(b.name.replace('Mesa ', ''), 10);
-                    return numA - numB;
-                }));
-            }, (error) => {
-                console.error("Error al obtener mesas:", error);
-            });
+const unsubscribeTables = onSnapshot(q, (snapshot) => {
+    // ✨ Verificación clave: Asegurarse de que el 'snapshot' sea un objeto válido.
+    if (snapshot) {
+        const tablesData = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        setTables(tablesData.sort((a, b) => {
+            const numA = parseInt(a.name.replace('Mesa ', ''), 10);
+            const numB = parseInt(b.name.replace('Mesa ', ''), 10);
+            return numA - numB;
+        }));
+    } else {
+        // En caso de que el snapshot sea nulo, simplemente limpiamos la lista
+        console.warn("Snapshot de mesas es nulo. No se pudo cargar la lista.");
+        setTables([]);
+    }
+}, (error) => {
+    console.error("Error al obtener mesas:", error);
+});
 
             return () => unsubscribeTables();
         }
