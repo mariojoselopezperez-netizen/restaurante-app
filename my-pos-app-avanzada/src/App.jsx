@@ -512,7 +512,7 @@ const unsubscribeTables = onSnapshot(q, (snapshot) => {
         try {
             const tableDocRef = doc(dbInstance, `artifacts/${appId}/users/${user.uid}/tables`, currentTableForPayment.id);
             const companySettingsRef = doc(dbInstance, `artifacts/${appId}/public/settings/companyInfo/config`);
-            const salesRecordsCollectionRef = collection(dbInstance, `artifacts/${appId}/public/salesRecords`);
+            const salesRecordsCollectionRef = collection(dbInstance, "salesRecords");
 
             await runTransaction(dbInstance, async (transaction) => {
                 const companyDoc = await transaction.get(companySettingsRef);
